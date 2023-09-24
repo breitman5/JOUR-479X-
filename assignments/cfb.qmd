@@ -1,0 +1,73 @@
+```{r}
+library(tidyverse)
+library(cfbfastR)
+```
+```{r}
+plays_2023 <- cfbd_pbp_data(2023)
+```
+
+```{r}
+plays_2023 %>% 
+  filter(drive_number == 1, play_number == 1, play_type != 'Kickoff') %>% 
+  distinct(home,play_type )
+```
+
+```{r}
+logs <- read_csv("https://dwillis.github.io/sports-data-files/footballlogs1122.csv")
+```
+```{r}
+logs <- logs %>% 
+  mutate(
+    Differential = TeamScore - OpponentScore
+  )
+```
+
+```{r}
+penalties <- lm(Differential ~ Penalties, data=logs)
+summary(penalties)
+```
+
+## This model shows us that there is significant evidence to believe that the results are not random, committing a lot of penalties means that you have a higher chance of losing the game. Howeber, these results are not predictable. It is very difficult to predict which team will committ more penalties in the game. This regression is useful in the sense we can probably say that the team that commits more penalties will lose games, but it is not useful for predicting anything. 
+
+
+```{r}
+model1 <- lm(Differential ~ DefFirstDownTotal + TotalTurnovers + DefYards, DefPassingPct, data=logs)
+summary(model1)
+```
+## These are four factors that over 50% of the time could be predicted to see who would win a game. If there are two teams playing, and one of them gives up more first down than their opponent, commits more turnovers, allows more yards, and gives up a higher completion percentage, they will lose approximately 58% of the time. Obviously, not all of these attributes can be coorelated because these are four different attributes on all aspect of the team, but are all just numbers that most coaches would prefer to be low. 
+
+
+```{r}
+logs<-logs %>% 
+  filter(Differential <= 8)
+```
+
+```{r}
+closegames <- logs %>% 
+  filter(Differential == 0:7) 
+```
+```{r}
+penalties_close <- lm(Differential ~ Penalties, data=closegames)
+summary(penalties_close)
+```
+## In this model, I took the same model that I used for penalties and applied it to only games that are close (which I defined as games decided between 1 and 7 points). We see again that these two things are hard to predict, but that our p-value shows that these two things are coorelated and that often in games that are decided in 7 points or less, the team that commits the most penalties is likely to lose. 
+
+```{r}
+model3 <- lm(Differential ~ DefFirstDownTotal + TotalTurnovers + DefYards, DefPassingPct, data=closegames)
+summary(model1)
+```
+## For these same characteristics in only close games, these things are coorelated together 58% of the time. We can see that the teams that committ more of these characteristics will likely lose. However, because the p-value remains so low, we can see that all of these aspects remain not correlated. 
+
+
+## I think at the end of the day, our models, especially the multiple regression model tells us kind of the same captain obvious scenario. Doing more of the things in the multiple regression model will likely result in more losses than wins. I think that the multiple regression model is probably better to use when trying to predict outcomes because we can combine more characteristics together to try and get results that we can predict. 
+
+
+
+
+
+
+
+
+
+
+
