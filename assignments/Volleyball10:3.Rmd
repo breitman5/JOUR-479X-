@@ -1,0 +1,59 @@
+```{r}
+library(tidyverse)
+```
+
+```{r}
+volleyballstats<-read_csv("https://raw.githubusercontent.com/dwillis/NCAAWomensVolleyballData/main/data/ncaa_womens_volleyball_matchstats_2023.csv")
+```
+# Loading the data 
+```{r}
+volleyball_eqaulity <- volleyballstats |> 
+  select(team, kills, defensive_kills, errors, defensive_errors)
+```
+# I decieded to use kills and errors to get my z-score table. 
+```{r}
+volleyballtotals <- volleyball_eqaulity |> 
+  group_by(team) |> 
+  summarise(
+    killsAvg = mean(kills), 
+    defensive_killsAvg = mean(defensive_kills), 
+    errorsAvg = mean(errors),
+    defensive_errorsAvg = mean(defensive_errors)
+    ) 
+```
+# Getting averages 
+```{r}
+teamzscore <- volleyballtotals |> 
+  mutate(
+    killszscore = as.numeric(scale(killsAvg, center = TRUE, scale = TRUE)),
+    defensive_killszscore = as.numeric(scale(defensive_killsAvg, center = TRUE, scale = TRUE)),
+    errorszscore = as.numeric(scale(errorsAvg, center = TRUE, scale = TRUE)) * -1,
+    defensive_errorszscore = as.numeric(scale(defensive_errorsAvg, center = TRUE, scale = TRUE)) * -1,
+    TotalZscore = killszscore + defensive_killszscore + errorszscore + defensive_errorszscore)
+```
+# getting the z-score for each category 
+```{r}
+head(teamzscore)
+```
+```{r}
+teamzscore |> arrange(desc(TotalZscore))
+```
+```{r}
+teamzscore |> 
+  filter(team == "Maryland Terrapins, Terps") |> 
+  arrange(desc(TotalZscore)) |>
+  select(team, TotalZscore)
+```
+
+# We see that from the data, that kills and errors are not factors that we can use to try and predict a volleyball game. The teams that are ranked the highest on this list are teams that typically do not have the most success in the sport. This is pretty interesting because in order to win volleyball games, you need to make kills. The fact that teams that have a lot of success in the sport (teams that are in the Big Ten) are not higher on this list. Maryland is found towards the middle of this data. 
+
+
+## A story that could be produced from this data is how Colorado State, who has the highest Z-score when combining kills and errors, also has the highest defensive kill mean. In fact, they had the highest total by a pretty wide margain. Their kills mean, also one of the highest, also helps explain why the Rams are first on this list. Colorado State had a record of 19-11 last season, which is pretty good. Some of these numbers could possibly explain that. What's interesting, however, is that Colorado State did not make the NCAA tournament. 
+
+## The first power five team on this list is Florida State, right behind Colorado State. Interestingly enough, the Seminoles finished the regular season 19-11 as well. The Noles made the NCAA tournament but lost in the first round. USC, 4th on this list, also made the NCAA tournament but lost in the second round.
+
+## The main takeaway that I have from this is that kills and errors is probably not the best way to determine the best volleyball teams in America. Even though kills are the main form of scoring in Volleyball, teams that had more success overall (Texas, Wisconsin, and Oregon) are further down on this list. 
+
+
+
+
