@@ -1,0 +1,137 @@
+```{r}
+library(tidyverse)
+library(Hmisc)
+```
+```{r}
+logs <- read_csv("https://dwillis.github.io/sports-data-files/cbblogs1523.csv")
+```
+```{r}
+logs <- logs |> mutate(
+  Differential = TeamScore - OpponentScore, 
+  NetRebounds = TeamTotalRebounds - OpponentTotalRebounds,
+  TurnoverMargin = TeamTurnovers - OpponentTurnovers)
+```
+
+
+```{r}
+rebounds_turnovers <- lm(Differential ~ NetRebounds + TurnoverMargin, data=logs)
+summary(rebounds_turnovers)
+```
+There seems to be a strong relationship between point differential and rebound differential. But, net rebounds is probably not a predictive stat to see which team won a game. 
+
+```{r}
+simplelogs <- logs |> select_if(is.numeric) |> select(-Game) |> select(Differential, NetRebounds, TurnoverMargin, TeamFGPCT, TeamTotalRebounds, OpponentFGPCT, OpponentTotalRebounds)
+```
+
+
+```{r}
+cormatrix <- rcorr(as.matrix(simplelogs))
+
+cormatrix$r
+```
+```{r}
+model2 <- lm(Differential ~ NetRebounds + TurnoverMargin + TeamFGPCT + OpponentFGPCT, data=logs)
+summary(model2)
+```
+```{r}
+logs |> 
+  filter(Team == "Michigan" & Season == '2020-2021' | Team == "Wisconsin" & Season == '2019-2020' | Team == "Michigan State" & Season == '2018-2019' | Team == "Michigan State" & Season == '2017-2018' | Team == 'Illinois' & Season == '2021-2022' | Team == 'Purdue' & Season == '2022-2023') |> 
+  summarise(
+    meanNetRebounds = mean(NetRebounds),
+    meanTurnoverMargin = mean(TurnoverMargin),
+    meanTeamFGPCT = mean(TeamFGPCT),
+    meanOpponentFGPCT = mean(OpponentFGPCT)
+  )
+```
+```{r}
+# (netrebounds estimate * meanNetRebounds) + (turnover margin estimate * meanTurnoverMargin) + (TeamFGPCT estimate * meanTeamFGPCT) + (OpponentFGPCT estimate * meanOpponentFGPCT) + Intercept
+(0.654800*6.05) + (-1.310579*0.6333333) + (90.805990*0.4543167) + (-91.351310*0.4107167) + 0.287665
+```
+```{r}
+logs |> 
+  filter(
+    Team == "Maryland" & Season == '2022-2023'
+    ) |> 
+  summarise(
+    meanNetRebounds = mean(NetRebounds),
+    meanTurnoverMargin = mean(TurnoverMargin),
+    meanTeamFGPCT = mean(TeamFGPCT),
+    meanOpponentFGPCT = mean(OpponentFGPCT)
+  )
+```
+```{r}
+(0.654800*1.685714) + (-1.310579*0.9142857) + (90.805990*0.4517714) + (-91.351310*0.428) + 0.287665
+```
+```{r}
+logs |> 
+     filter(
+         Team == "Maryland" & Season == '2022-2023'
+     ) |> summarise(avg_score = mean(TeamScore), avg_opp = mean(OpponentScore))
+```
+
+## 9/28/23
+
+
+```{r}
+gamelogs <- read_csv("wbblogs23.csv")
+```
+```{r}
+teamquality <- gamelogs |> 
+  select(Conference, Team, TeamFGPCT, TeamTotalRebounds, OpponentFGPCT, OpponentTotalRebounds)
+```
+
+```{r}
+teamtotals <- teamquality |> 
+  group_by(Conference, Team) |> 
+  summarise(
+    FGAvg = mean(TeamFGPCT), 
+    ReboundAvg = mean(TeamTotalRebounds), 
+    OppFGAvg = mean(OpponentFGPCT),
+    OffRebAvg = mean(OpponentTotalRebounds)
+    ) 
+```
+```{r}
+teamzscore <- teamtotals |> 
+  mutate(
+    FGzscore = as.numeric(scale(FGAvg, center = TRUE, scale = TRUE)),
+    RebZscore = as.numeric(scale(ReboundAvg, center = TRUE, scale = TRUE)),
+    OppZscore = as.numeric(scale(OppFGAvg, center = TRUE, scale = TRUE)) * -1,
+    OppRebZScore = as.numeric(scale(OffRebAvg, center = TRUE, scale = TRUE)) * -1,
+    TotalZscore = FGzscore + RebZscore + OppZscore + OppRebZScore
+  )  
+```
+
+```{r}
+head(teamzscore)
+```
+```{r}
+teamzscore |> arrange(desc(TotalZscore))
+```
+```{r}
+teamzscore |> 
+  filter(Conference == "Big Ten WBB") |> 
+  arrange(desc(TotalZscore)) |>
+  select(Team, TotalZscore)
+```
+```{r}
+powerfive_plus_one <- c("SEC WBB", "Big Ten WBB", "Pac-12 WBB", "Big 12 WBB", "ACC WBB", "Big East WBB")
+teamzscore |> 
+  filter(Conference %in% powerfive_plus_one) |> 
+  arrange(desc(TotalZscore)) |>
+  select(Team, TotalZscore)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
