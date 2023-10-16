@@ -1,0 +1,50 @@
+## The question that I plan to tackle is: I want to know which pitch is baseball is the hardest to hit, and more specifically, which specific pitcher’s specific pitch is hardest to hit. For this I will need data on ball spin rates, RPMs, as well as league stats. 
+
+## I believe that pitch by pitch data exists from this MLB season and do not believe I will need assistance in getting the data. I do believe that I might need help in making the data to a convertable format for R. I do not believe that I will need to improve the data as long as the data has the results of each at-bat. 
+
+
+## Here is where I found the initial data to use for my questions: https://www.retrosheet.org/game.htm 
+
+## I believe that once I figure out how to convert this data into a file that I can use, my data will be effective. 
+
+```{r}
+if (!requireNamespace('devtools', quietly = TRUE)){
+  install.packages('devtools')
+}
+devtools::install_github(repo = "BillPetti/baseballr")
+
+
+```
+```{r}
+library(tidyverse)
+library(baseballr)
+library(devtools)
+library(dplyr)
+
+```
+
+
+```{r}
+pitchers<-bref_daily_pitcher("2023-03-30", "2023-10-01") %>% 
+  fip_plus() %>% 
+  dplyr::select(season, Name, IP, ERA, SO, uBB, HBP, HR, FIP, wOBA_against, wOBA_CON_against) %>%
+  dplyr::arrange(dplyr::desc(IP)) 
+  
+
+```
+
+
+
+```{r}
+hitters <- bref_daily_batter("2023-03-30", "2023-10-01") 
+hitters %>%
+  dplyr::glimpse()
+```
+## I was able to load the data for hitters and pitchers. While I do not believe that this package has any way for me to answer the questions I intitally had, I can come up with other questions that I can talk about with baseball. 
+
+## For example,
+
+## Does the team that has the highest OPS's (on base + slugging), have the most wins?
+## Does age coorelate at all with better hitting stats?
+
+## There are probably more and better questions I can think of, but those are two examples just to start of with.
