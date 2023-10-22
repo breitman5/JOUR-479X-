@@ -20,7 +20,7 @@ library(tidyverse)
 library(baseballr)
 library(devtools)
 library(dplyr)
-
+library(ggplot2)
 ```
 
 
@@ -29,15 +29,14 @@ pitchers<-bref_daily_pitcher("2023-03-30", "2023-10-01") %>%
   fip_plus() %>% 
   dplyr::select(season, Name, IP, ERA, SO, uBB, HBP, HR, FIP, wOBA_against, wOBA_CON_against) %>%
   dplyr::arrange(dplyr::desc(IP)) 
-  
 
 ```
 
 
 
 ```{r}
-hitters <- bref_daily_batter("2023-03-30", "2023-10-01") 
-hitters %>%
+hitters <- bref_daily_batter("2023-03-30", "2023-10-01")
+hitters %>% 
   dplyr::glimpse()
 ```
 ## I was able to load the data for hitters and pitchers. While I do not believe that this package has any way for me to answer the questions I intitally had, I can come up with other questions that I can talk about with baseball. 
@@ -48,3 +47,72 @@ hitters %>%
 ## Does age coorelate at all with better hitting stats?
 
 ## There are probably more and better questions I can think of, but those are two examples just to start of with.
+
+
+
+
+
+## Does the team that has the highest OPS's (on base + slugging), have the most wins?
+```{r}
+PlayerOPS<-hitters %>% 
+  select(Name, Team, G, OPS, ) %>% 
+  filter(G >= 140) %>% 
+  arrange(desc(OPS))
+
+
+head(PlayerOPS)
+```
+## Here we see all of the top OPS's for this past season. I am fairly certain there is a way to make this Team OPS in some way but I'm not sure how. The only thing I could think of was filtering and making a data frame for every team but I'm pretty sure there is an easier way to group the OPS's by team. Anyways, from the firs six hitters on this list, 5 of them come from 2 teams, the Atlanta Braves and the Los Angeles Dodgers. These teams had 2 of the best 3 records in baseball this past season, so early off the bat, we could tell that the answer to the question should be yes. 14 of the top 20 OPS's in the sport belonged to teams that made the playoffs last season.
+
+
+
+```{r}
+
+```
+
+
+
+
+
+## Do pitchers that have a low ERA also have a high strikeout total?
+```{r}
+era<-pitchers %>% 
+  select(Name, ERA, SO, IP) %>% 
+  filter(IP >= 100, ERA <= 3.07) %>% 
+  arrange(ERA)
+```
+
+
+```{r}
+so<-pitchers %>% 
+  select(Name, ERA, SO, IP) %>% 
+  filter(IP >= 100, SO >=210) %>% 
+  arrange(desc(SO))
+```
+
+
+```{r}
+ggplot() + 
+  geom_bar(
+    data=era, 
+    aes(y=reorder(Name, -ERA), weight=ERA))+
+  labs(title = "2023 ERA Ledaers")
+  
+    
+  
+```
+```{r}
+ggplot() + 
+  geom_bar(
+    data=so, 
+    aes(y=reorder(Name, SO), weight=SO))+
+  labs(title = "2023 Striekout Ledaers")
+```
+## In these two charts we have the top ten pitchers in ERA from the 2023 regular season and the top eleven (There is a tie at number 10 with 210 strikeouts) from the regular season. Interestingly enough, there are only two pitchers whose name appears on both charts and that is Blake Snell from the San Diego Padres. Snell is likely to win the NL Cy Young Award this year which is given to the best pitcher in the National League. Snell led all of baseball in ERA and finished 4th in the NL in strikeouts. Gerrit Cole of the New York Yankees also finished in the Top 10 in both categories. Cole finished third in baseball in ERA and fifth in strikeouts. Interestingly enough, Cole is likely to win the AL Cy Young Award. Spencer Strider of the Atlanta Braves by far led all of baseball in strikeouts, but did not finish in the top 10 of ERA this season. 
+
+
+
+
+
+
+
