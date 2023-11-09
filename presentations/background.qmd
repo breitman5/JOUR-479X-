@@ -1,0 +1,8 @@
+## The question that I plan to tackle is: I want to know which pitch is baseball is the hardest to hit, and more specifically, which specific pitcher’s specific pitch is hardest to hit. For this I will need data on ball spin rates, RPMs, as well as league stats. 
+
+## I believe that pitch by pitch data exists from this MLB season and do not believe I will need assistance in getting the data. I do believe that I might need help in making the data to a convertable format for R. I do not believe that I will need to improve the data as long as the data has the results of each at-bat. 
+
+
+## Here is where I found the initial data to use for my questions: https://www.retrosheet.org/game.htm 
+
+## I believe that once I figure out how to convert this data into a file that I can use, my data will be effective. 

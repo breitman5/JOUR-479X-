@@ -1,0 +1,300 @@
+
+
+```{r}
+if (!requireNamespace('devtools', quietly = TRUE)){
+  install.packages('devtools')
+}
+devtools::install_github(repo = "BillPetti/baseballr")
+
+
+```
+```{r}
+library(tidyverse)
+library(baseballr)
+library(devtools)
+library(dplyr)
+library(ggplot2)
+library(ggalt)
+```
+
+
+```{r}
+pitchers<-bref_daily_pitcher("2023-03-30", "2023-10-01") %>% 
+  fip_plus() %>% 
+  dplyr::select(season, Name, IP, ERA, SO, uBB, HBP, HR, FIP, wOBA_against, wOBA_CON_against) %>%
+  dplyr::arrange(dplyr::desc(IP)) 
+
+```
+
+
+
+```{r}
+hitters23 <- bref_daily_batter("2023-03-30", "2023-10-01")
+hitters22 <- bref_daily_batter("2022-04-07", "2022-10-05")
+hitters21 <- bref_daily_batter("2021-04-01", "2021-10-03")
+hitters20 <- bref_daily_batter("2020-07-23", "2020-09-27")
+```
+## I was able to load the data for hitters and pitchers. While I do not believe that this package has any way for me to answer the questions I intitally had, I can come up with other questions that I can talk about with baseball. 
+
+## For example,
+
+## Does the team that has the highest OPS's (on base + slugging), have the most wins?
+## Does age coorelate at all with better hitting stats?
+
+
+## The main question I want to tackle is, do the teams that have the highest OPS per 1,000 at bats have the most wins over the last 4 completed MLB regular seasons.
+```{r}
+PlayerOPS23<-hitters23 %>% 
+  select(Name, Team, Level, G, OPS, AB ) %>% 
+  filter(G >=81) %>% 
+  arrange(desc(OPS))
+
+PlayerOPS22<-hitters22 %>% 
+  select(Name, Team, Level, G, OPS, AB ) %>% 
+  filter(G >=81) %>% 
+  arrange(desc(OPS))
+
+PlayerOPS21<-hitters21 %>% 
+  select(Name, Team, Level, G, OPS, AB ) %>% 
+  filter(G >=81) %>% 
+  arrange(desc(OPS))
+
+PlayerOPS20<-hitters20 %>% 
+  select(Name, Team, Level, G, OPS, AB ) %>% 
+  filter(G >=30) %>% 
+  arrange(desc(OPS))
+```
+## Here we see all of the top OPS's for this past season. From the firs six hitters on this list, 5 of them come from 2 teams, the Atlanta Braves and the Los Angeles Dodgers. These teams had 2 of the best 3 records in baseball this past season, so early off the bat, we could tell that the answer to the question should be yes. 14 of the top 20 OPS's in the sport belonged to teams that made the playoffs last season.
+
+## For this step, I am making dataframes for each of the four seasons that contain the players name, player's team, league (this is very important because originally it combined the data for Chicago, New York, and Los Angeles, the three cities that have two teams), games played (a player must play at least 50% of games to qualify, 81 games in 2023, 2022, and 2021, and 30 games in 2020), the players OPS, and at bats. 
+
+
+```{r}
+TeamOPS23<-PlayerOPS23 %>% 
+  mutate(team_label = paste(Team, Level)) %>% 
+  group_by(team_label) %>% 
+  summarize(TeamOPS_Sum = sum(OPS), TeamAB=sum(AB)) %>% 
+  filter(TeamOPS_Sum >= 1.500) %>% 
+  mutate(OPSper1000 = (TeamOPS_Sum/1000)*100) %>% 
+  arrange(desc(OPSper1000)) 
+
+
+
+TeamOPS22<-PlayerOPS22 %>% 
+  mutate(team_label = paste(Team, Level)) %>% 
+  group_by(team_label) %>% 
+  summarize(TeamOPS_Sum = sum(OPS), TeamAB=sum(AB)) %>% 
+  filter(TeamOPS_Sum >= 1.500) %>% 
+  mutate(OPSper1000 = (TeamOPS_Sum/1000)*100) %>% 
+  arrange(desc(OPSper1000)) 
+
+
+
+TeamOPS21<-PlayerOPS21 %>% 
+  mutate(team_label = paste(Team, Level)) %>% 
+  group_by(team_label) %>% 
+  summarize(TeamOPS_Sum = sum(OPS), TeamAB=sum(AB)) %>% 
+  filter(TeamOPS_Sum >= 1.500) %>% 
+  mutate(OPSper1000 = (TeamOPS_Sum/1000)*100) %>% 
+  arrange(desc(OPSper1000)) 
+
+TeamOPS20<-PlayerOPS20 %>% 
+  mutate(team_label = paste(Team, Level)) %>% 
+  group_by(team_label) %>% 
+  summarize(TeamOPS_Sum = sum(OPS), TeamAB=sum(AB)) %>% 
+  filter(TeamOPS_Sum >= 1.500) %>% 
+  mutate(OPSper1000 = (TeamOPS_Sum/1000)*100) %>% 
+  arrange(desc(OPSper1000)) 
+```
+
+
+
+
+## For these step, I am finding the OPS per 1,000 at bats for each team and cutting the results down to the top 10 per the last four seasons. 
+
+```{r}
+ggplot()+
+  geom_bar(
+    data=TeamOPS23 %>% head(10),
+    aes(x=reorder(team_label, OPSper1000), 
+        weight = OPSper1000)
+  )+
+  labs(title = "2023 Team OPS per 1,000 at-bats",  x="Team", Y="OPS per 1,000 At-bats", caption = "Source: Baseball-Reference | By: Ben Reitman")+
+  coord_flip()
+    
+ggplot()+
+  geom_bar(
+    data=TeamOPS22 %>% head(10),
+    aes(x=reorder(team_label, OPSper1000), 
+        weight = OPSper1000)
+  )+
+  labs(
+    title = "2022 Team OPS per 1,000 at-bats", x="Team", Y="OPS per 1,000 At-bats", caption = "Source: Baseball-Reference | By: Ben Reitman")+
+  coord_flip()
+
+ggplot()+
+  geom_bar(
+    data=TeamOPS21 %>% head(10),
+    aes(x=reorder(team_label, OPSper1000), 
+        weight = OPSper1000)
+  )+
+  labs(title = "2021 Team OPS per 1,000 at-bats",caption = "Source: Baseball-Reference, | By: Ben Reitman",  x="Team", Y="OPS per 1,000 At-bats")+
+  coord_flip()
+
+ggplot()+
+  geom_bar(
+    data=TeamOPS20 %>% head(10),
+    aes(x=reorder(team_label, OPSper1000), 
+        weight = OPSper1000)
+  )+
+  labs(title = "2020 Team OPS per 1,000 at-bats", caption = "Source: Baseball-Reference | By: Ben Reitman",  x="Team", Y="OPS per 1,000 At-bats") +
+  coord_flip()
+
+```
+## When one looks at hitting stats for MLB players, one of the stats that people immediately look at is OPS (on-base percentage plus slugging). This is one of the most telling stats of how effective any one given offensive player is. But, when combined, does the TEAM that has the highest OPS have the most wins in a season? Let's start out with 2023. The team with the highest OPS in the 2023 regular season was the Texas Rangers. The Rangers are currently playing in the World Series after an incredible run, but finished only with 89 wins. Interstingly enough, the top 5 team OPS's from this past season all belong to AL teams that made the playoffs. Out of the ten listed in 2023, only two (San Francisco and Detroit), did not make the playoffs. In 2022, the St Louis Cardinals let MLB in team OPS, but were bounced in the Wild Card Round of last year's playoffs. In addition, the two teams that were in the 2022 World Series (Houston and Philadelphia), are not on this list. For 2021, the San Francisco Giants led baseball in Team OPS, and wins, but were eliminated in the division series by the Dodgers. The World Series champion from 2021, the Atlanta Braves, are not on this list. For the shortened 2020 season, the Phillies and Orioles led the way in Team OPS with neither making the playoffs (in what was a season with expanded playoffs). One team that I find interesting to see twice on this list is the Colorado Rockies. The Rockies have been an abysmal team for the last four seasons yet their team OPS remains fairly high, why? Well when you play home games in Denver and the ball is carried by the altitude, it makes sense why their stats would be higher.
+
+## It seems that despite OPS being an extremely important statistic for individual players, OPS as a team stat is not very telling in terms of how a team performs over the course of a season. Sometimes the teams at the top have a lot of success in the regular seasona and not a lot in the postseason, or vice versa.  
+
+
+
+
+## How does age affect batting average?
+
+```{r}
+Age23<-hitters23 %>% 
+  select(Name, Team, Level, Age, G, BA ) %>% 
+  filter(G >= 81, Age <= 34) %>% 
+  group_by(Age) %>% 
+  summarise(AverageByAge = mean(BA))
+
+Age22<-hitters22 %>% 
+  select(Name, Team, Level, Age, G, BA ) %>% 
+  filter(G >= 81, Age <= 34) %>% 
+  group_by(Age) %>% 
+  summarise(AverageByAge = mean(BA))
+
+Age21<-hitters21 %>% 
+  select(Name, Team, Level, Age, G, BA ) %>% 
+  filter(G >= 81, Age <= 34) %>% 
+  group_by(Age) %>% 
+  summarise(AverageByAge = mean(BA))
+
+Age20<-hitters20 %>% 
+  select(Name, Team, Level, Age, G, BA ) %>% 
+  filter(G >= 30, Age <=34) %>% 
+  group_by(Age) %>% 
+  summarise(AverageByAge = mean(BA))
+```
+
+## In this step, I am making data frames that contain the mean batting average of every age in baseball (that is below 35), and players that played in at least half of the games in that particular season.
+
+
+```{r}
+ggplot()+
+  geom_bar(
+    data=Age23,
+    aes(x=reorder(Age, AverageByAge),
+        weight=AverageByAge)) +
+    labs(title = "2023 Batting Average By Age", caption = "Source: Baseball-Reference | By: Ben Reitman", x="Age", y="Average") +
+  coord_flip()
+
+ggplot()+
+  geom_bar(
+    data=Age22,
+    aes(x=reorder(Age, AverageByAge),
+        weight=AverageByAge)) +
+    labs(title = "2022 Batting Average by Age", caption = "Source: Baseball-Reference | By: Ben Reitman", x="Age", y="Average")+
+  coord_flip()
+
+ggplot()+
+  geom_bar(
+    data=Age21,
+    aes(x=reorder(Age, AverageByAge),
+        weight=AverageByAge)) +
+    labs(title = "2021 Batting Average by Age", caption = "Source: Baseball-Reference | By: Ben Reitman", x="Age", y="Average")+
+  coord_flip()
+
+ggplot()+
+  geom_bar(
+    data=Age20,
+    aes(x=reorder(Age, AverageByAge),
+        weight=AverageByAge)) +
+    labs(title = "2020 Batting Average by Age", caption = "Source: Baseball-Reference | By: Ben Reitman", x="Age", y="Average")+
+  coord_flip()
+```
+## Here, I have made charts on the last four seasons based on batting average by the age of a hitter. I took the mean of all averages by hitters with a given age. I decided to only include players whose age during the season was 34 or younger. The charts would be a bit inflated if I used players that are over 35, simply because there just are not a whole lot of them. It makes a lot of sense that we see ages such as 19, 20, and 21 at the top of these charts. MLB players that are entering the league are becoming younger and younger and with that, are becoming more and more successful. Based on the charts that I have made though, there does not seem to be a coorelation between age and batting average. Near the top of these charts, the majority of the ages are in their early to mid 20s, which tends to seem ilke that is where most players have a lot success in their careers. 
+
+
+
+
+## And now a less in-depth look at another question:
+## Do pitchers that have a low ERA also have a high strikeout total, based on this past regular season?
+```{r}
+era<-pitchers %>% 
+  select(Name, ERA, SO, IP) %>% 
+  filter(IP >= 100, ERA <= 3.07) %>% 
+  arrange(ERA)
+```
+
+
+```{r}
+so<-pitchers %>% 
+  select(Name, ERA, SO, IP) %>% 
+  filter(IP >= 100, SO >=210) %>% 
+  arrange(desc(SO))
+```
+
+
+```{r}
+ggplot() + 
+  geom_bar(
+    data=era, 
+    aes(y=reorder(Name, -ERA), weight=ERA))+
+  labs(title = "2023 ERA Ledaers", x= "ERA", y="Pitcher", caption = "Source: Baseball-Reference | By Ben Reitman")
+  
+    
+  
+```
+```{r}
+ggplot() + 
+  geom_bar(
+    data=so, 
+    aes(y=reorder(Name, SO), weight=SO))+
+  labs(title = "2023 Strikeout Ledaers", x = "Strikeouts", y="Pitcher", caption = "Source: Baseball-Reference | By: Ben Reitman")
+```
+## In these two charts we have the top ten pitchers in ERA from the 2023 regular season and the top eleven (There is a tie at number 10 with 210 strikeouts) from the regular season. Interestingly enough, there are only two pitchers whose name appears on both charts and that is Blake Snell from the San Diego Padres. Snell is likely to win the NL Cy Young Award this year which is given to the best pitcher in the National League. Snell led all of baseball in ERA and finished 4th in the NL in strikeouts. Gerrit Cole of the New York Yankees also finished in the Top 10 in both categories. Cole finished third in baseball in ERA and fifth in strikeouts. Interestingly enough, Cole is likely to win the AL Cy Young Award. Spencer Strider of the Atlanta Braves by far led all of baseball in strikeouts, but did not finish in the top 10 of ERA this season. 
+
+
+
+
+
+## Does the number of home runs a team hits in a season coorelate with their win total?
+
+```{r}
+TeamHR<-hitters23 %>% 
+  select(Name, Team, Level, HR) %>% 
+  mutate(Team_label = paste(Team, Level)) %>% 
+  group_by(Team_label) %>% 
+  summarise(TeamHR = sum(HR)) %>% 
+  filter(TeamHR >= 107)
+```
+
+
+```{r}
+ggplot() + 
+  geom_lollipop(
+    data=TeamHR %>% head(10),
+    aes(y=reorder(Team_label, TeamHR), x=TeamHR), 
+    horizontal = TRUE
+    ) + theme_minimal() + 
+  labs(title = "Home Runs in 2023: Atlanta and Everyone Else", subtitle = "Braves Mashed their way through 2023", y="team", x="Team HR", caption = "Source: Baseball-Reference | By: Ben Reitman")
+```
+
+## Here I have a lollipop chart depicting the ten teams that hit the most home runs in 2023. The Atlanta Braves had one of the most historic offenses in Major League Baseball history, tying the 2019 Minnesota Twins for the most home runs by a team in a single season (307). Atlanta also had the most wins in all of baseball this season with 104. The Baltimore Orioles, 4th on this list, come in at 4. The Orioles had the most wins in the American League. It is important to note that players who were traded during the middle of the season do not account for any of these numbers, but the change would not be very much if they were. As mentioned before, despite how bad of a team the Colorado Rockies are, they still find themselves in the top ten in the league in total home runs because in large part of where they play. Arizona, also on this list, is currently representing the National League in the World Series. 
+
+## We can see that at least based on the 2023 season, there is not a clear coorelation between home runs and wins because some teams on this list did not have successful seasons, but hit a lot of home runs. However there are several teams that had very successful years (Atlanta, Baltimore, Arizona) that are on this chart. 
+
+
+
+
+
