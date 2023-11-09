@@ -113,15 +113,60 @@ teamzscore |>
   arrange(desc(TotalZscore)) |>
   select(Team, TotalZscore)
 ```
+
+# 10/10/23
+
 ```{r}
-powerfive_plus_one <- c("SEC WBB", "Big Ten WBB", "Pac-12 WBB", "Big 12 WBB", "ACC WBB", "Big East WBB")
-teamzscore |> 
-  filter(Conference %in% powerfive_plus_one) |> 
-  arrange(desc(TotalZscore)) |>
-  select(Team, TotalZscore)
+logs<-read_csv("https://dwillis.github.io/sports-data-files/logs22.csv")
+```
+```{r}
+umd <- logs |> filter(Team == "Maryland")
+```
+```{r}
+ggplot() + geom_line(data=umd, aes(x=Date, y=TeamFGPCT))
 ```
 
+```{r}
+ggplot() + 
+  geom_line(data=umd, aes(x=Date, y=TeamFGPCT)) + 
+  scale_y_continuous(limits = c(0, .6))
+```
+```{r}
+ill <- logs |> filter(Team == "Illinois")
+```
+```{r}
+ggplot() + geom_line(data=umd, aes(x=Date, y=TeamFGPCT), color="red")
+```
+```{r}
+ggplot() + 
+  geom_line(data=umd, aes(x=Date, y=TeamFGPCT), color="red") + 
+  geom_line(data=ill, aes(x=Date, y=TeamFGPCT), color="orange")
+```
+```{r}
+powerfive <- c("SEC", "Big Ten", "Pac-12", "Big 12", "ACC")
 
+p5conf <- logs |> filter(Conference %in% powerfive)
+```
+
+```{r}
+ggplot() + 
+  geom_line(data=p5conf, aes(x=Date, y=TeamFGPCT, group=Team), color="grey") + 
+  geom_line(data=umd, aes(x=Date, y=TeamFGPCT), color="red") + 
+  geom_line(data=ill, aes(x=Date, y=TeamFGPCT), color="orange") + 
+  scale_y_continuous(limits = c(0, .65))
+```
+```{r}
+average <- logs |> group_by(Date) |> summarise(mean_shooting=mean(TeamFGPCT))
+```
+
+```{r}
+ggplot() + 
+  geom_line(data=p5conf, aes(x=Date, y=TeamFGPCT, group=Team), color="grey") + 
+  geom_line(data=umd, aes(x=Date, y=TeamFGPCT), color="red") + 
+  geom_line(data=ill, aes(x=Date, y=TeamFGPCT), color="orange") + 
+  geom_line(data=average, aes(x=Date, y=mean_shooting), color="black") + 
+  scale_y_continuous(limits = c(0, .70))
+```
 
 
 

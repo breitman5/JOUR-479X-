@@ -62,10 +62,75 @@ summary(model1)
 ## I think at the end of the day, our models, especially the multiple regression model tells us kind of the same captain obvious scenario. Doing more of the things in the multiple regression model will likely result in more losses than wins. I think that the multiple regression model is probably better to use when trying to predict outcomes because we can combine more characteristics together to try and get results that we can predict. 
 
 
+## 10/10/23
+
+```{r}
+library(waffle)
+```
+```{r}
+md <- c("Rushing"=175, "Passing"=314)
+ms <- c("Rushing"=100, "Passing"=221)
+```
+
+```{r}
+waffle(
+        md, 
+        rows = 10, 
+        title="Maryland's offense", 
+        xlab="1 square = 1 yard", 
+        colors = c("black", "red")
+)
+```
+```{r}
+passing <- c("Maryland"=314, "Michigan State"=221)
+```
+```{r}
+waffle(
+        passing, 
+        rows = 10, 
+        title="Maryland vs Michigan State: passing", 
+        xlab="1 square = 1 yard", 
+        colors = c("red", "green")
+)
+```
+```{r}
+iron(
+ waffle(md, 
+        rows = 10, 
+        title="Maryland's offense", 
+        xlab="1 square = 1 yard", 
+        colors = c("black", "red")
+        ),
+ waffle(ms, 
+        rows = 10, 
+        title="Michigan State's offense", 
+        xlab="1 square = 1 yard", 
+        colors = c("black", "green")
+        )
+)
+```
+```{r}
+md <- c("Rushing"=175, "Passing"=314)
+ms <- c("Rushing"=100, "Passing"=221, 168)
+```
 
 
-
-
+```{r}
+iron(
+ waffle(md, 
+        rows = 10, 
+        title="Maryland's offense", 
+        xlab="1 square = 1 yard", 
+        colors = c("black", "red")
+        ),
+ waffle(ms, 
+        rows = 10, 
+        title="Michigan State's offense", 
+        xlab="1 square = 1 yard",
+        colors = c("black", "green", "white")
+        )
+)
+```
 
 
 
