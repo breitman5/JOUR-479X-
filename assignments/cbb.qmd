@@ -113,69 +113,71 @@ teamzscore |>
   arrange(desc(TotalZscore)) |>
   select(Team, TotalZscore)
 ```
-
-# 10/10/23
-
 ```{r}
-logs<-read_csv("https://dwillis.github.io/sports-data-files/logs22.csv")
-```
-```{r}
-umd <- logs |> filter(Team == "Maryland")
-```
-```{r}
-ggplot() + geom_line(data=umd, aes(x=Date, y=TeamFGPCT))
+powerfive_plus_one <- c("SEC WBB", "Big Ten WBB", "Pac-12 WBB", "Big 12 WBB", "ACC WBB", "Big East WBB")
+teamzscore |> 
+  filter(Conference %in% powerfive_plus_one) |> 
+  arrange(desc(TotalZscore)) |>
+  select(Team, TotalZscore)
 ```
 
-```{r}
-ggplot() + 
-  geom_line(data=umd, aes(x=Date, y=TeamFGPCT)) + 
-  scale_y_continuous(limits = c(0, .6))
-```
-```{r}
-ill <- logs |> filter(Team == "Illinois")
-```
-```{r}
-ggplot() + geom_line(data=umd, aes(x=Date, y=TeamFGPCT), color="red")
-```
-```{r}
-ggplot() + 
-  geom_line(data=umd, aes(x=Date, y=TeamFGPCT), color="red") + 
-  geom_line(data=ill, aes(x=Date, y=TeamFGPCT), color="orange")
-```
-```{r}
-powerfive <- c("SEC", "Big Ten", "Pac-12", "Big 12", "ACC")
 
-p5conf <- logs |> filter(Conference %in% powerfive)
+
+
+## 11/9/23
+
+```{r}
+logs <- read_csv("https://dwillis.github.io/sports-data-files/cbblogs1524.csv")
+```
+```{r}
+FGPCT<-logs %>% 
+  select(Season, Game, TeamFull, TeamFGPCT, OpponentFGPCT) %>% 
+  filter(TeamFull == "Maryland Terrapins") %>% 
+  filter(Game <= 3)
 ```
 
 ```{r}
-ggplot() + 
-  geom_line(data=p5conf, aes(x=Date, y=TeamFGPCT, group=Team), color="grey") + 
-  geom_line(data=umd, aes(x=Date, y=TeamFGPCT), color="red") + 
-  geom_line(data=ill, aes(x=Date, y=TeamFGPCT), color="orange") + 
-  scale_y_continuous(limits = c(0, .65))
+Terps<-FGPCT %>% 
+  group_by(Season) %>% 
+  summarise(
+            count = n(),
+            MeanFGPCT = mean(TeamFGPCT),
+            MeanOppFGPCT = mean(OpponentFGPCT))
 ```
+
 ```{r}
-average <- logs |> group_by(Date) |> summarise(mean_shooting=mean(TeamFGPCT))
+library(ggalt)
 ```
+
 
 ```{r}
 ggplot() + 
-  geom_line(data=p5conf, aes(x=Date, y=TeamFGPCT, group=Team), color="grey") + 
-  geom_line(data=umd, aes(x=Date, y=TeamFGPCT), color="red") + 
-  geom_line(data=ill, aes(x=Date, y=TeamFGPCT), color="orange") + 
-  geom_line(data=average, aes(x=Date, y=mean_shooting), color="black") + 
-  scale_y_continuous(limits = c(0, .70))
+  geom_lollipop(
+    data=Terps, 
+    aes(y=Season, x=MeanFGPCT), 
+    horizontal = TRUE
+    )+
+  labs(title = "Maryland's Field Goal Percentage in First Three Games", subtitle = "The Terps have started off the last several seasons with hot shooting")
+```
+## Here, we are able to see Maryland's field goal percentage from their first three games of every season since 2017-2018 (minus 2018-2019) as well as the number from Tuesday's game against Mount St Mary's. Marylad has started the season shooting the ball well in the vast majority of these seasons. In 2020-2021, the Terps started off the season red hot, shooting close to 60% in their first three games. The following season, Maryland cooled down a bit shooting just over 40%. 2021-2022 was a rough year for Maryland that including a stunning loss to George Mason at home. Several weeks later, Head Coach Mark Turgeon was fired. Last season in Kevin Willard's first season, the Terps got off to another hot start, shooting close to 50%. On Tuesday in Maryland's first game of the season, the Terps shot close to 505 as well. It will be interesting to see if this number stays close to where it has been over the years, because the Terp's competition over the first three games is tougher this season than it was last season. The first three games last season, Maryland played Niagara, Western Carolina, and Binghampton. This year in addition to Mount St Mary's, the Terps will play Davidson on Friday, and either Clemson or UAB on Saturday.
+
+
+
+```{r}
+library(rvest)
+```
+```{r}
+url <- "http://www.cfbstats.com/2023/leader/national/team/offense/split01/category09/sort01.html"
 ```
 
 
+```{r}
+scoringoffense <- url %>% 
+  read_html() %>% 
+  html_table()
 
-
-
-
-
-
-
+scoringdf <- scoringoffense[[1]]
+```
 
 
 
