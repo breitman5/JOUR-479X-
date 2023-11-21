@@ -33,6 +33,7 @@ hitters23 <- bref_daily_batter("2023-03-30", "2023-10-01")
 hitters22 <- bref_daily_batter("2022-04-07", "2022-10-05")
 hitters21 <- bref_daily_batter("2021-04-01", "2021-10-03")
 hitters20 <- bref_daily_batter("2020-07-23", "2020-09-27")
+hitters19 <- bref_daily_batter()
 ```
 ## I was able to load the data for hitters and pitchers. While I do not believe that this package has any way for me to answer the questions I intitally had, I can come up with other questions that I can talk about with baseball. 
 
@@ -297,4 +298,136 @@ ggplot() +
 
 
 
+## PROJECT 2
+
+
+
+```{r}
+library(tidyverse)
+library(baseballr)
+library(devtools)
+library(dplyr)
+library(ggplot2)
+library(ggalt)
+```
+```{r}
+pitchers<-bref_daily_pitcher("2013-03-30", "2023-10-01") %>% 
+  fip_plus() %>% 
+  dplyr::select(season, Name, IP, ERA, SO, uBB, HBP, HR, FIP, wOBA_against, wOBA_CON_against) %>%
+  dplyr::arrange(dplyr::desc(IP)) 
+```
+
+```{r}
+hitters23 <- bref_daily_batter("2023-03-30", "2023-10-01")
+hitters22 <- bref_daily_batter("2022-04-07", "2022-10-05")
+hitters21 <- bref_daily_batter("2021-04-01", "2021-10-03")
+hitters20 <- bref_daily_batter("2020-07-23", "2020-09-27")
+hitters19 <- bref_daily_batter("2019-03-28", "2019-09-29")
+```
+
+```{r}
+hitters23 <- bref_daily_batter("2023-03-30", "2023-10-01") 
+hitters23 %>%
+  dplyr::glimpse()
+
+hitters22 <- bref_daily_batter("2022-04-07", "2022-10-05") 
+hitters22 %>%
+  dplyr::glimpse()
+
+hitters21 <- bref_daily_batter("2021-04-01", "2021-10-03")
+hitters21 <- data_frame(nitters21) %>% 
+  print(hitters21)
+
+hitters20 <- bref_daily_batter("2020-07-23", "2020-09-27") 
+hitters20 %>%
+  dplyr::glimpse()
+
+
+htiters19 <- bref_daily_batter("2019-03-28", "2019-09-29")
+hitters19 <- data_frame(hitters19) %>% 
+  print(hitters19)
+
+
+hitters18 <- bref_daily_batter("2018-03-29", "2018-09-30")
+hitters18 <- data_frame(hitters18) %>% 
+  print(hitters18)
+
+hitters17 <- bref_daily_batter("2017-04-02", "2017-10-01")
+hitters17 <- data_frame(hitters17) %>% 
+  print(hitters17)
+
+hitters16 <- bref_daily_batter("2016-04-03", "2016-10-02")
+hitters16 <- data_frame(hitters16) %>% 
+  print(hitters16)
+
+hitters15 <- bref_daily_batter("2015-04-05", "2015-10-04")
+hitters15 <- data_frame(hitters15) %>% 
+  print(hitters15)
+
+hitters14 <- bref_daily_batter("2014-03-30","2014-10-05")
+hitters14 <- data_frame(hitters14) %>% 
+  print(hitters14)
+
+hitters13 <- bref_daily_batter("2013-03-30", "2013-09-29")
+hitters13 <- bref_daily_batter(hitters13) %>% 
+  print(hitters13)
+```
+## Here I am loading all of the data frames. The package can be a little bit tricky to work with so the code that I am using can vary based on each year.
+
+
+
+```{r}
+Rangers23<-hitters23 %>% 
+  filter(Team == "Texas")
+
+Astros22<-hitters22 %>% 
+  filter(Team == "Houston")
+
+Braves21 <- hitters21 %>% 
+  filter(Team == "Atlanta")
+
+Dodgers20 <-hitters20 %>% 
+  filter(Team == "Los Angeles") %>% 
+  filter(Level == "Maj-NL")
+
+Nationals19 <- hitters19 %>% 
+  filter(Team == "Washington")
+
+RedSox18 <- hitters18 %>% 
+  filter(Team == "Boston")
+
+Astros17 <-hitters17 %>% 
+  filter(Team == "Houston")
+
+Cubs16 <- hitters16 %>% 
+  filter(Team == "Chicago") %>% 
+  filter(Level == "Maj-NL")
+
+Royals15 - hitters15 %>% 
+  filter(Team == "Kansas City")
+
+Giants14 <- hitters14 %>% 
+  filter(Team == "San Francisco")
+
+RedSox13 <- hitters13 %>% 
+  filter(Team == "Boston")
+
+```
+## In this section of the code, I am filtering each of the last ten World Series Champions by year by their hitting stats.
+
+
+```{r}
+team_consistency(2023)
+team_consistency(2022)
+team_consistency(2021)
+team_consistency(2020)
+team_consistency(2019)
+team_consistency(2018)
+team_consistency(2017)
+team_consistency(2016)
+team_consistency(2015)
+team_consistency(2014)
+team_consistency(2013)
+```
+## In this block of code, I have loaded some more advanced team stats that could help find out if World Series Champions nave any similarities during the regular season.
 
