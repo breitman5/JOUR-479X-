@@ -1,0 +1,22 @@
+```{r}
+library(hoopR)
+library(tidyverse)
+```
+```{r}
+lineups <- nba_teamdashlineups(team_id = 1610612737)[[2]]
+```
+
+```{r}
+lineups <- lineups |> 
+  mutate(across(starts_with("GP"):ncol(lineups), as.numeric))
+```
+```{r}
+lineups %>% 
+  filter(str_detect(GROUP_NAME, "T. Young")) %>% 
+  select(GROUP_NAME, GP, MIN, PLUS_MINUS) %>% 
+  arrange(desc(PLUS_MINUS))
+```
+## Trae Young is one of the best players in the NBA. However, interestigly enough, the Hawks starting lineup is one of the worst +/- on the team at -26. However, in two lineups that have Trae Young in them that have both played over 80 minutes, they have +/- of 21 and 11. In those two lineups, Young is the only player that appears in both lineups. The other four players in each lineup are a mix of starters and bench players.
+
+
+
