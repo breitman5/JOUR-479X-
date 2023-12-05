@@ -309,6 +309,7 @@ library(devtools)
 library(dplyr)
 library(ggplot2)
 library(ggalt)
+library(ggbeeswarm)
 ```
 ```{r}
 pitchers<-bref_daily_pitcher("2013-03-30", "2023-10-01") %>% 
@@ -326,51 +327,11 @@ hitters19 <- bref_daily_batter("2019-03-28", "2019-09-29")
 ```
 
 ```{r}
-hitters23 <- bref_daily_batter("2023-03-30", "2023-10-01") 
-hitters23 %>%
-  dplyr::glimpse()
-
-hitters22 <- bref_daily_batter("2022-04-07", "2022-10-05") 
-hitters22 %>%
-  dplyr::glimpse()
-
-hitters21 <- bref_daily_batter("2021-04-01", "2021-10-03")
-hitters21 <- data_frame(nitters21) %>% 
-  print(hitters21)
-
-hitters20 <- bref_daily_batter("2020-07-23", "2020-09-27") 
-hitters20 %>%
-  dplyr::glimpse()
-
-
-htiters19 <- bref_daily_batter("2019-03-28", "2019-09-29")
-hitters19 <- data_frame(hitters19) %>% 
-  print(hitters19)
-
-
-hitters18 <- bref_daily_batter("2018-03-29", "2018-09-30")
-hitters18 <- data_frame(hitters18) %>% 
-  print(hitters18)
-
-hitters17 <- bref_daily_batter("2017-04-02", "2017-10-01")
-hitters17 <- data_frame(hitters17) %>% 
-  print(hitters17)
-
-hitters16 <- bref_daily_batter("2016-04-03", "2016-10-02")
-hitters16 <- data_frame(hitters16) %>% 
-  print(hitters16)
-
-hitters15 <- bref_daily_batter("2015-04-05", "2015-10-04")
-hitters15 <- data_frame(hitters15) %>% 
-  print(hitters15)
-
-hitters14 <- bref_daily_batter("2014-03-30","2014-10-05")
-hitters14 <- data_frame(hitters14) %>% 
-  print(hitters14)
-
-hitters13 <- bref_daily_batter("2013-03-30", "2013-09-29")
-hitters13 <- bref_daily_batter(hitters13) %>% 
-  print(hitters13)
+hitters19<-read_csv("~/Desktop/JOUR-479X-/presentations/hitters19.csv")
+hitters20<-read_csv("~/Desktop/JOUR-479X-/presentations/hitters20.csv")
+hitters21<-read_csv("~/Desktop/JOUR-479X-/presentations/hitters21.csv")
+hitters22<-read_csv("~/Desktop/JOUR-479X-/presentations/hitters22.csv")
+hitters23<-read_csv("~/Desktop/JOUR-479X-/presentations/hitters23.csv")
 ```
 ## Here I am loading all of the data frames. The package can be a little bit tricky to work with so the code that I am using can vary based on each year.
 
@@ -430,4 +391,59 @@ team_consistency(2014)
 team_consistency(2013)
 ```
 ## In this block of code, I have loaded some more advanced team stats that could help find out if World Series Champions nave any similarities during the regular season.
+```{r}
+hitters21 %>% 
+  group_by(Team) %>% 
+  summarise()
+```
+```{r}
+ggplot() + 
+  geom_point(data=hitters23, aes(x=OPS, y=BA), color ="grey") +
+  xlim(0,1.2) +
+  geom_point(data=Rangers23, aes(x=OPS, y=BA), color ="blue")+
+  ylim(0,.350)
+```
+```{r}
+ggplot() + 
+  geom_point(data=hitters22, aes(x=OPS, y=BA), color ="grey") +
+  xlim(0,1.2) +
+  geom_point(data=Astros22, aes(x=OPS, y=BA), color ="orange")+
+  ylim(0,.350)
+```
+
+
+
+
+
+
+
+
+```{r}
+ggplot() + 
+  geom_point(data=hitters21, aes(x=OPS, y=BA), color ="grey") +
+  xlim(0,1.2) +
+  geom_point(data=Braves21, aes(x=OPS, y=BA), color ="navy")+
+  ylim(0,.350)
+```
+```{r}
+ggplot() + 
+  geom_point(data=hitters20, aes(x=OPS, y=BA), color ="grey") +
+  xlim(0,1.2) +
+  geom_point(data=Dodgers20, aes(x=OPS, y=BA), color ="blue")+
+  ylim(0,.350)
+```
+```{r}
+ggplot() + 
+  geom_point(data=hitters19, aes(x=OPS, y=BA), color ="grey") +
+  xlim(0,1.2) +
+  geom_point(data=Nationals19, aes(x=OPS, y=BA), color ="red")+
+  ylim(0,.350)
+```
+```{r}
+
+```
+
+
+
+
 
