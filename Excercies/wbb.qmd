@@ -170,3 +170,35 @@ ggplot() +
 
 
 
+
+
+
+## 12/5/23
+
+```{r}
+logs <- read_csv("https://thescoop.org/sports-data-files/wbblogs24.csv")
+rankings <- read_csv("https://thescoop.org/sports-data-files/wbb_rankings.csv")
+logs23 <- read_csv("https://thescoop.org/sports-data-files/wbblogs23.csv")
+```
+
+```{r}
+parity_index24 <- logs |> 
+  group_by(Team, Conference) |> 
+  summarise(srs_score = mean(TeamSRS), sos_score = mean(TeamSOS)) |> 
+  mutate(parity_index = (srs_score + 100) / (sos_score + 100))
+
+parity_index23 <- logs23 |> 
+  group_by(Team, Conference) |> 
+  summarise(srs_score = mean(TeamSRS), sos_score = mean(TeamSOS)) |> 
+  mutate(parity_index = (srs_score + 100) / (sos_score + 100))
+```
+```{r}
+parity_index24 |> 
+  filter(Conference == 'Big Ten WBB') |> 
+  ggplot() + 
+  geom_point(aes(x=srs_score, y = sos_score, label = Team)) +
+  geom_text(aes(x=srs_score, y = sos_score, label = Team))
+```
+
+
+
