@@ -15,8 +15,6 @@ library(devtools)
 library(dplyr)
 library(ggplot2)
 library(ggalt)
-library(ggrepel)
-library(ggbump)
 ```
 
 
@@ -341,107 +339,76 @@ hitters23<-read_csv("~/Desktop/JOUR-479X-/presentations/hitters23.csv")
 
 ```{r}
 Rangers23<-hitters23 %>% 
-  filter(Team == "Texas") %>% 
-  filter(PA >=50)
+  filter(Team == "Texas")
 
 Astros22<-hitters22 %>% 
-  filter(Team == "Houston") %>% 
-  filter(PA >=50)
+  filter(Team == "Houston")
 
 Braves21 <- hitters21 %>% 
-  filter(Team == "Atlanta") %>% 
-  filter(PA >=50)
+  filter(Team == "Atlanta")
 
 Dodgers20 <-hitters20 %>% 
   filter(Team == "Los Angeles") %>% 
-  filter(Level == "Maj-NL") %>% 
-  filter(PA >=50)
+  filter(Level == "Maj-NL")
 
 Nationals19 <- hitters19 %>% 
-  filter(Team == "Washington") %>% 
-  filter(PA >=50)
+  filter(Team == "Washington")
 
+RedSox18 <- hitters18 %>% 
+  filter(Team == "Boston")
 
+Astros17 <-hitters17 %>% 
+  filter(Team == "Houston")
+
+Cubs16 <- hitters16 %>% 
+  filter(Team == "Chicago") %>% 
+  filter(Level == "Maj-NL")
+
+Royals15 - hitters15 %>% 
+  filter(Team == "Kansas City")
+
+Giants14 <- hitters14 %>% 
+  filter(Team == "San Francisco")
+
+RedSox13 <- hitters13 %>% 
+  filter(Team == "Boston")
 
 ```
 ## In this section of the code, I am filtering each of the last ten World Series Champions by year by their hitting stats.
 
 
 ```{r}
-hitters23 %>% 
-  filter(PA >=100) %>% 
-  summarise(OPS = mean(OPS))
-
-hitters22 %>% 
-  filter(PA >=100) %>% 
-  summarise(OPS = mean(OPS))
-
-hitters21 %>% 
-  filter(PA >=100) %>% 
-  summarise(OPS = mean(OPS))
-
-hitters20 %>% 
-  filter(PA >=100) %>% 
-  summarise(OPS = mean(OPS))
-
-hitters19 %>% 
-  filter(PA >=100) %>% 
-  summarise(OPS = mean(OPS))
+team_consistency(2023)
+team_consistency(2022)
+team_consistency(2021)
+team_consistency(2020)
+team_consistency(2019)
+team_consistency(2018)
+team_consistency(2017)
+team_consistency(2016)
+team_consistency(2015)
+team_consistency(2014)
+team_consistency(2013)
 ```
-
+## In this block of code, I have loaded some more advanced team stats that could help find out if World Series Champions nave any similarities during the regular season.
 ```{r}
-hitters23 %>% 
-  filter(PA >=100) %>% 
-  summarise(AVG = mean(BA))
-
-hitters22 %>% 
-  filter(PA >=100) %>% 
-  summarise(AVG = mean(BA))
-
 hitters21 %>% 
-  filter(PA >=100) %>% 
-  summarise(AVG = mean(BA))
-
-hitters20 %>% 
-  filter(PA >=100) %>% 
-  summarise(AVG = mean(BA))
-
-hitters19 %>% 
-  filter(PA >=100) %>% 
-  summarise(AVG = mean(BA))
+  group_by(Team) %>% 
+  summarise()
 ```
-## Baseball is the most unpredictable sport among the Big 4 sports. But is there a way to try and predict who will and won't win the World Series? We can use stats from the last 5 World Series Champions to find out.
-
-## OPS and batting average are two of the most important stats for hitters. Is there any coorelation between individual team hitting and recent World Series winners?
-
-
 ```{r}
 ggplot() + 
-  geom_point(data=hitters23, aes(x=OPS, y=BA, ), color ="grey") +
-  xlim(.500,1.2) +
-  labs(title = "Seager leads Rangers to First Title in Franchise History", subtitle = "AL MVP finalist had one of the best offensive seasons in 2023")+
+  geom_point(data=hitters23, aes(x=OPS, y=BA), color ="grey") +
+  xlim(0,1.2) +
   geom_point(data=Rangers23, aes(x=OPS, y=BA), color ="blue")+
-  ylim(.200,.350)+
-  geom_hline(yintercept=.275, color="black") + 
-  geom_vline(xintercept=.698, color="black") +
-  geom_text_repel(
-    data=Rangers23,
-    aes(x=OPS, y=BA, label=Name)
-  )
+  ylim(0,.350)
 ```
 ```{r}
 ggplot() + 
   geom_point(data=hitters22, aes(x=OPS, y=BA), color ="grey") +
   xlim(0,1.2) +
-  labs(title = "Trio of Astros Sluggers Carry Team to Second Title in Five Years", subtitle = "Another amazing year for Jose Altuve leads Houston to another title")+
   geom_point(data=Astros22, aes(x=OPS, y=BA), color ="orange")+
-  ylim(0,.350)+
-  geom_hline(yintercept=.275, color="black") + 
-  geom_vline(xintercept=.672, color="black") +
-  geom_text_repel(
-    data=Astros22,
-    aes(x=OPS, y=BA, label=Name)
-  )
+  ylim(0,.350)
 ```
 
 
@@ -455,135 +422,28 @@ ggplot() +
 ggplot() + 
   geom_point(data=hitters21, aes(x=OPS, y=BA), color ="grey") +
   xlim(0,1.2) +
-  labs(title = "Freddie's Fabulous Season Leads Braves to Finally Breakthrough", subtitle = "Atlanta's corner infield duo propels team to first title since 1995")+
   geom_point(data=Braves21, aes(x=OPS, y=BA), color ="navy")+
-  ylim(0,.350)+
-  geom_hline(yintercept=.275, color="black") + 
-  geom_vline(xintercept=.683, color="black") +
-  geom_text_repel(
-    data=Braves21,
-    aes(x=OPS, y=BA, label=Name)
-  )
-  
+  ylim(0,.350)
 ```
 ```{r}
 ggplot() + 
   geom_point(data=hitters20, aes(x=OPS, y=BA), color ="grey") +
   xlim(0,1.2) +
-  labs(title = "Dodgers End Drought in Bubble Season", subtitle = "LA blasts their way to first World Series win since 1980")+
   geom_point(data=Dodgers20, aes(x=OPS, y=BA), color ="blue")+
-  ylim(0,.350)+
-  geom_hline(yintercept=.275, color="black") + 
-  geom_vline(xintercept=.721, color="black") +
-  geom_text_repel(
-    data=Dodgers20,
-    aes(x=OPS, y=BA, label=Name)
-  )
+  ylim(0,.350)
 ```
 ```{r}
 ggplot() + 
   geom_point(data=hitters19, aes(x=OPS, y=BA), color ="grey") +
   xlim(0,1.2) +
-  labs(title = "Soto, Turner Carry Washington to Stunning World Series Win", subtitle = "Nats get first championship behind a slew of good hitting")+
   geom_point(data=Nationals19, aes(x=OPS, y=BA), color ="red")+
-  ylim(0,.350)+
-  geom_hline(yintercept=.275, color="black") + 
-  geom_vline(xintercept=.703, color="black") +
-  geom_text_repel(
-    data=Nationals19,
-    aes(x=OPS, y=BA, label=Name)
-  )
-```
-## These five charts contain every hitter with over 100 plate apperance's in a given season, as well as every player from a World Series winner shown in color with their name. The purpose of making these charts is to see if there is a pattern in terms of OPS, batting average, and winning a World Series. The average OPS from every season is used as the y-intercept, while a batting average of .275 is the x-intercept for every chart. Batting average is probably not the most important stat when it comes to hitting, but is still important. 
-
-## There actually is some unexpeted coorelation in these charts. There at least two or so players for each team that stand out as clear outliars from the rest of the field are clearly in the upper-right quadrant. For example, this past season, Corey Seager and Evan Carter from the Rangers stand out. They had some more good players as well such as Marcus Semien, but Semien's batting average was around the .275 mark. An interesting team is the Nationals in 2019. The Nats did not win their division in 2019 and snuck into the playoffs as a Wild Card team, but had 4 significant contributers (and Howie Kendrick, who had the most important hit of the season in Game 7 of the World Series) in the upper right quadrant. Given all of this information, It's probably a safe inference to assume that if a team does not have 2 players that hit about .275, and are above the league average in OPS, they will not win the World Series in that given season.
-
-
-```{r}
-team_consistency(2023)
+  ylim(0,.350)
 ```
 ```{r}
-# install.packages("devtools")
-devtools::install_github("BillPetti/baseballr", ref = "development_branch")
-```
-
-
-
-
-
-## One of the biggest questions about winning a World Series is the amount of regular season wins a team has. The regular season is a six month long marathon, and the team that has the most wins (rarely under 100) can be eliminated in just three games. So, does being in first place in your division matter early in the season, or is it really all about finding a way to get in.
-
-```{r}
-May23<-bref_standings_on_date("2023-05-01","AL West", from = FALSE)
-June23<-bref_standings_on_date("2023-06-01","AL West", from = FALSE)
-July23<-bref_standings_on_date("2023-07-01", "AL West", from = FALSE)
-August23<-bref_standings_on_date("2023-08-01", "AL West", from = FALSE)
-September23<-bref_standings_on_date("2023-09-01", "AL West", from = FALSE)
-
-
-May22<-bref_standings_on_date("2022-05-01", "AL West", from = FALSE)
-June22<-bref_standings_on_date("2022-06-01", "AL West", from = FALSE)
-July22<-bref_standings_on_date("2022-07-01", "AL West", from = FALSE)
-August22<-bref_standings_on_date("2022-08-01", "AL West", from = FALSE)
-September22<-bref_standings_on_date("2022-09-01", "AL West", from = FALSE)
-
-May21<-bref_standings_on_date("2021-05-01","NL East", from = FALSE)
-June21<-bref_standings_on_date("2021-06-01","NL East", from = FALSE)
-July21<-bref_standings_on_date("2021-07-01","NL East", from = FALSE)
-August21<-bref_standings_on_date("2021-08-01","NL East",from = FALSE)
-September21<-bref_standings_on_date("2021-09-01","NL East", from = FALSE)
-
-
-August20<-bref_standings_on_date("2020-08-01","NL West", from = FALSE)
-September20<-bref_standings_on_date("2020-09-01","NL West", from = FALSE)
-
-
-May19<-bref_standings_on_date("2019-05-01","NL East",from = FALSE)
-June19<-bref_standings_on_date("2019-06-01","NL East", from = FALSE)
-July19<-bref_standings_on_date("2019-07-01","NL East", from = FALSE)
-August19<-bref_standings_on_date("2019-08-01","NL East", from = FALSE)
-September19<-bref_standings_on_date("2019-09-01","NL East", from = FALSE)
-
-```
-
-```{r}
-West23Standings <- rbind(May23, June23, July23, August23, September23)
-
-West23Standings<-West23Standings %>% 
-  select(Tm, W) 
 
 ```
 
 
 
-```{r}
-write_csv(West23Standings)
-
-
-```
-
-
-```{r}
-write_csv(West23Standings, "~/Desktop/West23Standings.csv")
-```
-```{r}
-West23Standings_West23Standings <- read_csv("West23Standings - West23Standings.csv")
-```
-```{r}
-West23Standings <- West23Standings_West23Standings 
-```
-
-
-
-```{r}
-ggplot() + geom_step(data=West23Standings, aes(x=Month, y=W, group=Tm))
-```
-
-
-```{r}
-ggplot() + 
-  geom_bump(
-    data=West23Standings, aes(x=Month, y=W, group=Tm))
-```
 
 
